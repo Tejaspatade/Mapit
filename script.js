@@ -192,9 +192,7 @@ class Mapty {
         // Generate Markup
         let markup = `
         <li class="workout workout--${workout.type}" data-id="${workout.id}">
-            <h2 class="workout__title">${
-                workout.description
-            } &nbsp;&nbsp;&nbsp;&nbsp;<i class="fa-solid fa-pen-to-square"></i> &nbsp;&nbsp;<i class="fa-solid fa-x"></i></h2>
+            <h2 class="workout__title">${workout.description} </h2>
             <div class="workout__details">
                 <span class="workout__icon">${
                     workout.type === "running" ? "🏃🏼‍♂️" : "🚴🏼‍♂️"
