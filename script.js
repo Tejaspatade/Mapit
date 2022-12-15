@@ -16,6 +16,7 @@ class Mapty {
     #mapEvent;
     #mapZoomLevel = 15;
     #workouts = [];
+    #marker;
 
     // Constructor
     constructor() {
@@ -35,11 +36,6 @@ class Mapty {
             "click",
             this._focusOnWorkout.bind(this)
         );
-        // // Remove A Workout
-        // containerWorkouts.addEventListener(
-        //     "click",
-        //     this._removeWorkout.bind(this)
-        // );
     }
 
     // Gets position using Geolocation API
@@ -169,7 +165,7 @@ class Mapty {
 
     _renderWorkoutMarker(workout) {
         //  Display Popup & Marker
-        L.marker(workout.coords)
+        this.#marker = L.marker(workout.coords)
             .addTo(this.#map)
             .bindPopup(
                 L.popup({
@@ -192,7 +188,9 @@ class Mapty {
         // Generate Markup
         let markup = `
         <li class="workout workout--${workout.type}" data-id="${workout.id}">
-            <h2 class="workout__title">${workout.description} </h2>
+            <h2 class="workout__title">${
+                workout.description
+            } &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;<i class="fa-regular fa-x"></i></h2>
             <div class="workout__details">
                 <span class="workout__icon">${
                     workout.type === "running" ? "🏃🏼‍♂️" : "🚴🏼‍♂️"
@@ -237,6 +235,11 @@ class Mapty {
 
         // Add HTML as sibling to form element in sidebar
         form.insertAdjacentHTML("afterend", markup);
+
+        // Add event listener onto the close buttons
+        document
+            .querySelector(".fa-x")
+            .addEventListener("click", this._removeWorkout.bind(this));
     }
 
     _hideForm() {
@@ -291,35 +294,23 @@ class Mapty {
         this.#workouts.forEach((workout) => this._renderWorkout(workout));
     }
 
-    // _editWorkout(event) {
-    //     // Matching guard Clause
-    //     if (!event.target.classList.contains("fa-pen-to-square")) return;
+    _removeWorkout(event) {
+        // Stop Event from Bubbling up to workouts
+        event.stopPropagation();
 
-    //     // Get id for workout to be updated
-    //     console.log(event.target.closest(".workout").dataset.id);
+        // Get id for workout to be deleted
+        const deleteId = event.target.closest(".workout").dataset.id;
 
-    //     // Remove the workout from sidebar
+        // Delete it from workouts
+        this.#workouts = this.#workouts.filter((work) => work.id !== deleteId);
 
-    //     // Display Form
-    //     form.classList.remove("hidden");
-    //     inputDistance.focus();
-    // }
+        // Remove marker & list item from UI
+        this.#map.removeLayer(this.#marker);
+        document.querySelector(`[data-id="${deleteId}"]`).remove();
 
-    // _removeWorkout(event) {
-    //     // Matching guard Clause
-    //     if (!event.target.classList.contains("fa-x")) return;
-
-    //     // Get id for workout to be deleted
-    //     const deleteId = event.target.closest(".workout").dataset.id;
-
-    //     // Delete it from workouts
-    //     this.#workouts = this.#workouts.filter((work) => work.id !== deleteId);
-
-    //     // Remove marker & list item from UI
-
-    //     // Update workouts in localStorage
-    //     this._storeWorkouts();
-    // }
+        // Update workouts in localStorage
+        this._storeWorkouts();
+    }
 
     reset() {
         localStorage.removeItem("workouts");
@@ -329,7 +320,7 @@ class Mapty {
 // Instantiate Mapty app
 const app = new Mapty();
 
-// Workout Class
+// -------------------------------------Workout Class-----------------------------------------
 class Workout {
     date = new Date();
     id = (Date.now() + "").slice(-10);
