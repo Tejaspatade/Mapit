@@ -35,6 +35,11 @@ class Mapty {
             "click",
             this._focusOnWorkout.bind(this)
         );
+        // // Remove A Workout
+        // containerWorkouts.addEventListener(
+        //     "click",
+        //     this._removeWorkout.bind(this)
+        // );
     }
 
     // Gets position using Geolocation API
@@ -287,6 +292,36 @@ class Mapty {
         // Existing Workout List Rendered
         this.#workouts.forEach((workout) => this._renderWorkout(workout));
     }
+
+    // _editWorkout(event) {
+    //     // Matching guard Clause
+    //     if (!event.target.classList.contains("fa-pen-to-square")) return;
+
+    //     // Get id for workout to be updated
+    //     console.log(event.target.closest(".workout").dataset.id);
+
+    //     // Remove the workout from sidebar
+
+    //     // Display Form
+    //     form.classList.remove("hidden");
+    //     inputDistance.focus();
+    // }
+
+    // _removeWorkout(event) {
+    //     // Matching guard Clause
+    //     if (!event.target.classList.contains("fa-x")) return;
+
+    //     // Get id for workout to be deleted
+    //     const deleteId = event.target.closest(".workout").dataset.id;
+
+    //     // Delete it from workouts
+    //     this.#workouts = this.#workouts.filter((work) => work.id !== deleteId);
+
+    //     // Remove marker & list item from UI
+
+    //     // Update workouts in localStorage
+    //     this._storeWorkouts();
+    // }
 
     reset() {
         localStorage.removeItem("workouts");
