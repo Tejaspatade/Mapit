@@ -22,6 +22,9 @@ class Mapty {
         // Get Coordinates & load the map at user's current position
         this._getPosition();
 
+        // Get LocalStorage workouts
+        this._getWorkouts();
+
         // Event Handlers
         // Form Submission Event
         form.addEventListener("submit", this._newWorkout.bind(this));
@@ -65,6 +68,9 @@ class Mapty {
 
         // Click Event on Map
         this.#map.on("click", this._showForm.bind(this));
+
+        // Existing Workout List Markers Rendered
+        this.#workouts.forEach((workout) => this._renderWorkoutMarker(workout));
     }
 
     // Display Form when mapEvent happens
@@ -144,13 +150,16 @@ class Mapty {
         this._renderWorkoutMarker(workout);
 
         // 5. Render Workout List
-        this._renderWorkoutList(workout);
+        this._renderWorkout(workout);
 
-        // Prevent page reload due to form submission
+        // 6. Prevent page reload due to form submission
         event.preventDefault();
 
-        // Clear Input Fields & Hide Form
+        // 7. Clear Input Fields & Hide Form
         this._hideForm();
+
+        // 8. Store all current workouts in localStorage using localStorage API
+        this._storeWorkouts();
     }
 
     _renderWorkoutMarker(workout) {
@@ -174,11 +183,13 @@ class Mapty {
             .openPopup();
     }
 
-    _renderWorkoutList(workout) {
+    _renderWorkout(workout) {
         // Generate Markup
         let markup = `
         <li class="workout workout--${workout.type}" data-id="${workout.id}">
-            <h2 class="workout__title">${workout.description}</h2>
+            <h2 class="workout__title">${
+                workout.description
+            } &nbsp;&nbsp;&nbsp;&nbsp;<i class="fa-solid fa-pen-to-square"></i> &nbsp;&nbsp;<i class="fa-solid fa-x"></i></h2>
             <div class="workout__details">
                 <span class="workout__icon">${
                     workout.type === "running" ? "🏃🏼‍♂️" : "🚴🏼‍♂️"
@@ -257,6 +268,28 @@ class Mapty {
                 duration: 0.8,
             },
         });
+    }
+
+    _storeWorkouts() {
+        // Stored workouts array as string.
+        localStorage.setItem("workouts", JSON.stringify(this.#workouts));
+    }
+
+    _getWorkouts() {
+        // Convert string from localStorage back to objects
+        const data = JSON.parse(localStorage.getItem("workouts"));
+
+        // Guard Clause
+        if (!data) return;
+
+        this.#workouts = data;
+
+        // Existing Workout List Rendered
+        this.#workouts.forEach((workout) => this._renderWorkout(workout));
+    }
+
+    reset() {
+        localStorage.removeItem("workouts");
     }
 }
 
